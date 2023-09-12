@@ -1,5 +1,5 @@
-/* Forteza, Mussio and Pereyra: Does Political Gridlock Undermine Checks and Balances? A Lab Experiment.
-	Descriptive Statistics
+/* Forteza, Mussio and Pereyra (2023): Can political gridlock undermine checks and balances? A lab experiment.
+{https://github.com/alforteza/weakening-checks-and-balances/tree/main}
 
 
 Outline

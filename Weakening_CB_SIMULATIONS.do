@@ -1,5 +1,6 @@
 /* 
-Weakening checks and balances. Forteza, Mussio and Pereyra. Simulations. 
+Forteza, Mussio and Pereyra (2023): Can political gridlock undermine checks and balances? A lab experiment.
+{https://github.com/alforteza/weakening-checks-and-balances/tree/main} 
 
 This do file produces the expected net gains from SP in each and every within- and between-subjects treatment. For
 stochastic simulations of the model used to calibrate the experiment see Juego_del_bloqueo_politico_PANEL_20190717.do.

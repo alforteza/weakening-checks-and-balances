@@ -1,4 +1,7 @@
 /* 
+Forteza, Mussio and Pereyra (2023): Can political gridlock undermine checks and balances? A lab experiment.
+{https://github.com/alforteza/weakening-checks-and-balances/tree/main}
+
 Weakening checks and balances. Building the database. 
 
 This do file process the databases produced by ztree and produces a workable database called data.dta.

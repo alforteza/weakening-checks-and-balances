@@ -1,5 +1,6 @@
 /* 
-Weakening checks and balances. Processing of experimental data.
+Forteza, Mussio and Pereyra (2023): Can political gridlock undermine checks and balances? A lab experiment.
+{https://github.com/alforteza/weakening-checks-and-balances/tree/main}
  
 Based on: main.tex, in project: Experiment Special Powers.
 
@@ -212,17 +213,16 @@ foreach x in 1 3 5 6 7 8 9 {
 
 * Note: I decided not to use prtest because of small sample size. In some cases n(1-p) or np is not larger than 5.
 
-********************************************************************************************************************************************************************
+**********************************************************************************************************************
 * 3. Regressions without controlling for mht. 
-********************************************************************************************************************************************************************
-/* We run these regressions to determine (i) the control mean and (ii) the number of observations in tables \ref{table:main} and 
-\ref{table:excessSP}. The set of hypotheses to be tested is:
+**********************************************************************************************************************
+/* We run these regressions to determine (i) the control mean and (ii) the number of observations in tables \ref{table:main} and \ref{table:excessSP}. The set of hypotheses to be tested is:
 
 	H1: pg (weakly) raises SP if biased $X$ and $L$ ($X_R$ and $L_C$) and the reform is ex ante beneficial ($q>1/2$)
 	H2: pg (weakly) raises SP if unbiased $X$ ($X_M$)
  	H3: pg (weakly) decreases SP if biased $X$ and $L$ ($X_R$ and $L_C$) and the reform is ex ante harmful ($q<=1/2$).
 	H4: pg (weakly) decreases SP if unbiased $L$ ($L_M$)
-	H5: SP weakly rises with q when $X_R$ and $L_C$ 
+	H5: SP weakly rises with q when $X_R$ and $L_C$. Note: H1 and H5 share the same treated observations and differ in the control observations.   
 	H6: SP weakly decreases with r
 	H7: SP decreases with corruption framing
 	H8: SP decresases with corruption + political framing
@@ -255,6 +255,8 @@ global list = " check_morethan1 riskaverse female right strong_leader"
 
 reg Vi i.h1 i.h2 i.h3 i.h4 	i.h6 i.h7 i.h8 i.h9	$list	
 replace num_obs = e(N) if _n <= 9
+
+*Note: We do not include h5 in the above regression because h1 = h5. 
 
 margins i.h1, at(h2==0 h3==0 h4==0)
 matrix x = r(b)
@@ -310,13 +312,24 @@ list num_obs controls if  _n<=23
 
 export excel controls num_obs using "$path/controls" if _n<22, replace firstrow(variables) // Copy in Weakening-CB-Experiment-TABLES.xlsx, sheet controls.
 
+* Order effects
+
+* Potential issues with learning or tiring: gridlock XR-LC in task 5, gridlock XR-LU in task 8 and gridlock XU-LC in task 10. 
+/*
+reg Vi h1 h2 h3 h4 	h6 h7 h8 h9	 $list , vce(cluster i)
+estimates store m1, title(Model 1, not controlling for order) 
+reg Vi h1 h2 h3 h4 	h6 h7 h8 h9	t $list , vce(cluster i) 
+estimates store m2, title(Model 2, controlling for order)
+ estout *, cells(b se)
+ estout * using "$path/order_effects.tex", style(tex) varlabels(_cons \_cons) cells("b se")
+* order of task is not statistically significant. No changes in h1 to h4. 
+*/
+
 ********************************************************************************************************************************************************************
 * 4. Adjusting for multiple hypothesis testing.
 ********************************************************************************************************************************************************************
  
-/* Clustering: we have nested clusters in individuals and between-subjects treatments (T1 to T7). We decided to cluster at
-individuals because of few treatment clusters and low correlation of regressors within treatments. Clustering at
-the highest aggregation level (treatments) would severely reduce precision without adding much in terms of consistency. 
+/* Clustering: we have nested clusters in individuals and between-subjects treatments (T1 to T7). We decided to cluster at individuals because of few treatment clusters and low correlation of regressors within treatments. Clustering at the highest aggregation level (treatments) would severely reduce precision without adding much in terms of consistency. 
 * Copy from the STATA results window using copy as HTML and paste in Weakening-CB-Experiment-TABLES.xlsx, sheet mhtreg.
 */
 
@@ -331,6 +344,21 @@ mhtreg 	(Vi h1 h2 h3 h4 h6 h7 h8 h9 $list) 		(Vi h2 h3 h4 h1 h6 h7 h8 h9 $list) 
 */		(Vi h3_strong h4_strong  h3 h4 $list)					(Vi h4_strong h3_strong  h3 h4 $list) 					/*
 */		(Vi h4_corruption h4 $list)								(Vi h4_political h4 $list)  , cluster(i) cltype(3) seed(13035561)
 
+* Note: We test h5 using h1 because h1=h5 and we cannot include both dummies. The difference between testing h1 an h5 lies with the controls. 
+ 
+/* 
+* Alternative clustering: following a referee's advice, we also estimated the model clustering using Session rather than individuals:
+
+mhtreg 	(Vi h1 h2 h3 h4 h6 h7 h8 h9 $list) 		(Vi h2 h3 h4 h1 h6 h7 h8 h9 $list) (Vi h3 h4 h1 h2 h6 h7 h8 h9 $list) 		/*
+*/		(Vi h4 h1 h2 h3 h6 h7 h8 h9 $list) 		(Vi h1 $list if h1 == 1 | h3 == 1) (Vi h6 h1 h2 h3 h4 h6 h7 h8 h9 $list)   	/*
+*/		(Vi h7 h1 h2 h3 h4 h6 h8 h9 $list) 		(Vi h8 h1 h2 h3 h4 h6 h7 h9 $list) (Vi h9 h1 h2 h3 h4 h6 h7 h8 $list)  		/*
+*/      (Vi h3_check_morethan1 h4_check_morethan1 h3 h4 $list)	(Vi h4_check_morethan1 h3_check_morethan1 h3 h4 $list) 	/*
+*/		(Vi h3_riskaverse h4_riskaverse  h3 h4 $list) 			(Vi h4_riskaverse h3_riskaverse  h3 h4 $list)				/*
+*/		(Vi h3_female h4_female h3 h4 $list)					(Vi h4_female h3_female h3 h4 $list)					/*
+*/		(Vi h3_right h4_right h3 h4 $list)						(Vi h4_right h3_right h3 h4 $list)					/*
+*/		(Vi h3_strong h4_strong  h3 h4 $list)					(Vi h4_strong h3_strong  h3 h4 $list) 					/*
+*/		(Vi h4_corruption h4 $list)								(Vi h4_political h4 $list)  , cluster(session_code) cltype(3) seed(13035561)
+*/ 
  
 *****************************************************************************
 * 5. Fisher tests (Appendix of the document)

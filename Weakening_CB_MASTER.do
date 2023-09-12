@@ -1,6 +1,7 @@
-/* Weakening checks and balances. MASTER do file. 
-
-
+/*   
+Forteza, Mussio and Pereyra (2023): Can political gridlock undermine checks and balances? A lab experiment.
+{https://github.com/alforteza/weakening-checks-and-balances/tree/main}
+MASTER do file.
 */
 
 if  ("`c(hostname)'"=="MacBook-Pro-de-Alvaro.local") global path "/Users/alvaroforteza/Documents/Agency/Experimento dismantling CB/Analisis"  
